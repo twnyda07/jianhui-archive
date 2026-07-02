@@ -262,9 +262,13 @@ function seriesCounts(){
   }
   return Object.entries(counts).sort((a,b)=>b[1]-a[1]);
 }
+const PINNED=["秒懂楞嚴","華嚴200問","觀心一支香","楞嚴禪七","雲端華嚴","大哉問"];
 function renderTopics(){
   const items=seriesCounts();
-  const top=items.slice(0,6);
+  const cmap={}; items.forEach(([s,n])=>cmap[s]=n);
+  let top=PINNED.filter(s=>cmap[s]>0).map(s=>[s,cmap[s]]);   // 固定六個主題
+  for(const [s,n] of items){ if(top.length>=6) break; if(!PINNED.includes(s)) top.push([s,n]); }
+  top=top.slice(0,6);
   const el=$("#topics");
   el.innerHTML = `<div class="topic ${state.series===''?'on':''}" data-s="">全部影片</div>` +
     top.map(([s,n])=>`<div class="topic ${state.series===s?'on':''}" data-s="${esc(s)}">${esc(s)}<span class="n">${n} 部</span></div>`).join("");
